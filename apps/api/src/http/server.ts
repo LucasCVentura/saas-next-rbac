@@ -2,6 +2,7 @@ import { fastifyCors } from '@fastify/cors'
 import fastifyJwt from '@fastify/jwt'
 import { fastifySwagger } from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
+import { env } from '@saas/env'
 import { fastify } from 'fastify'
 import {
   jsonSchemaTransform,
@@ -10,6 +11,7 @@ import {
   ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 
+import { authenticateWithGithub } from './auth/authenticate-with-github'
 import { authenticateWithPassword } from './auth/authenticate-with-password'
 import { createAccount } from './auth/create-account'
 import { getProfile } from './auth/get-profile'
@@ -31,13 +33,21 @@ app.register(fastifySwagger, {
       description: 'Full-stack app',
       version: '1.0.0',
     },
-    servers: [],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
   transform: jsonSchemaTransform,
 })
 
 app.register(fastifyJwt, {
-  secret: 'my-jwt-secret',
+  secret: env.JWT_SECRET,
 })
 
 app.register(fastifySwaggerUi, {
@@ -50,7 +60,7 @@ app.register(authenticateWithPassword)
 app.register(getProfile)
 app.register(requestPasswordRecover)
 app.register(resetPassword)
-
-app.listen({ port: 3333 }).then(() => {
+app.register(authenticateWithGithub)
+app.listen({ port: env.SERVER_PORT }).then(() => {
   console.log('Server is running')
 })

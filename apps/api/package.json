@@ -8,6 +8,7 @@
     "@fastify/swagger-ui": "^4.0.1",
     "@prisma/client": "5.16.2",
     "@saas/auth": "workspace:*",
+    "@saas/env": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "fastify": "^4.28.1",
@@ -21,6 +22,7 @@
     "@saas/prettier": "workspace:*",
     "@saas/tsconfig": "workspace:*",
     "@types/node": "^20.14.9",
+    "dotenv-cli": "^7.4.2",
     "prisma": "^5.16.2",
     "tsx": "^4.16.2"
   },
@@ -28,7 +30,10 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "dev": "tsx watch src/http/server.ts"
+    "dev": "pnpm env:load tsx watch src/http/server.ts",
+    "db:migrate": "pnpm env:load prisma migrate dev",
+    "db:studio": "pnpm env:load prisma studio",
+    "env:load": "dotenv -e ../../.env --"
   },
   "prettier": "@saas/prettier",
   "eslintConfig": {
